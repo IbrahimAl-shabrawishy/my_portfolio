@@ -7,7 +7,7 @@ const TITLES = [
   "Frontend Developer",
   "React.js Specialist",
   "UI/UX Enthusiast",
-  "JavaScript Engineer",
+  "JavaScript Developer",
 ];
 
 function ParticleField() {
@@ -189,8 +189,8 @@ export default function Hero() {
             <motion.a
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              href="/assets/Ibrahim_Al-Shabrawishy_CV.docx"
-              download="Ibrahim_Al-Shabrawishy_CV.docx"
+              href="/assets/Ibrahim_Al-Shabrawishy_CV.pdf"
+              download="Ibrahim_Al-Shabrawishy_CV.pdf"
               className="flex items-center gap-2 px-5 py-3.5 text-white/40 hover:text-yellow-400 transition-colors text-sm"
             >
               <Download size={15} /> Download CV

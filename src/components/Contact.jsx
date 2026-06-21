@@ -45,7 +45,7 @@ export default function Contact() {
           <motion.div initial={{ opacity:0, x:-40 }} animate={inView?{opacity:1,x:0}:{}} transition={{delay:0.2}}
             className="lg:col-span-2 space-y-5">
             {[
-              { icon: Mail, label:"Email", value:"ibrahimalshabrawishy@gmail.com", href:"mailto:ibrahimalshabrawishy@gmail.com" },
+              { icon: Mail, label:"Email", value:"ibrahimelshabrawishy123321@gmail.com", href:"mailto:ibrahimelshabrawishy123321@gmail.com" },
               { icon: MapPin, label:"Location", value:"Egypt 🇪🇬", href:null },
             ].map((item) => (
               <div key={item.label} className="rounded-2xl p-5 flex items-start gap-4" style={glassStyle}>
@@ -69,7 +69,7 @@ export default function Contact() {
                 {[
                   { Icon: GithubIcon, href:"https://github.com/IbrahimAl-shabrawishy", label:"GitHub" },
                   { Icon: LinkedinIcon, href:"https://www.linkedin.com/in/ibrahim-al-shabrawishy-00a8331b8/", label:"LinkedIn" },
-                  { Icon: Mail, href:"mailto:ibrahimalshabrawishy@gmail.com", label:"Email" },
+                  { Icon: Mail, href:"mailto:ibrahimelshabrawishy123321@gmail.com", label:"Email" },
                 ].map(({ Icon, href, label }) => (
                   <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
                     className="w-10 h-10 rounded-xl flex items-center justify-center text-white/40 hover:text-yellow-400 transition-all duration-300"
@@ -106,7 +106,7 @@ export default function Contact() {
             ) : (
               <form onSubmit={handleSubmit} className="rounded-2xl p-8 space-y-6" style={glassStyle}>
                 <div className="grid sm:grid-cols-2 gap-6">
-                  {[{n:"name",p:"John Doe",l:"Your Name",t:"text"},{n:"email",p:"john@example.com",l:"Email Address",t:"email"}].map(f=>(
+                  {[{n:"name",p:"Ibrahim Al-shabrawishy",l:"Your Name",t:"text"},{n:"email",p:"ibrahim@example.com",l:"Email Address",t:"email"}].map(f=>(
                     <div key={f.n}>
                       <label className="text-xs text-white/30 block mb-2" style={{fontFamily:"'JetBrains Mono',monospace"}}>{f.l}</label>
                       <input type={f.t} name={f.n} required value={form[f.n]} onChange={handleChange} placeholder={f.p}

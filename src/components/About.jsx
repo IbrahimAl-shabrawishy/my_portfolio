@@ -96,7 +96,7 @@ export default function About() {
               {[
                 { label: "Location", value: "Egypt 🇪🇬" },
                 { label: "Specialty", value: "React.js" },
-                { label: "Experience", value: "3+ Years" },
+                { label: "Experience", value: "1+ Years" },
                 { label: "Status", value: "Open to Work ✅" },
               ].map((item) => (
                 <div key={item.label} className="glass rounded-xl p-4">
