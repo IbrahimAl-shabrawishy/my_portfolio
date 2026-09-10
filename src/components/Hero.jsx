@@ -1,23 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, ArrowDown, Download, ExternalLink } from "lucide-react";
+import { Mail, ArrowDown, Download, ExternalLink, MessageCircle } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./Icons";
+import { useLanguage } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 
-const TITLES = [
-  "Frontend Developer",
-  "React.js Specialist",
-  "UI/UX Enthusiast",
-  "JavaScript Developer",
-];
-
-function ParticleField() {
+function ParticleField({ isDark }) {
   const canvasRef = useRef(null);
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let W = (canvas.width = window.innerWidth);
     let H = (canvas.height = window.innerHeight);
-    const particles = Array.from({ length: 60 }, () => ({
+    const particles = Array.from({ length: 45 }, () => ({
       x: Math.random() * W,
       y: Math.random() * H,
       r: Math.random() * 1.5 + 0.3,
@@ -31,7 +27,9 @@ function ParticleField() {
       particles.forEach((p) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(200,169,110,${p.opacity})`;
+        ctx.fillStyle = isDark
+          ? `rgba(200,169,110,${p.opacity})`
+          : `rgba(180,132,40,${p.opacity})`;
         ctx.fill();
         p.x += p.dx;
         p.y += p.dy;
@@ -50,39 +48,46 @@ function ParticleField() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+  }, [isDark]);
   return (
     <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
   );
 }
 
 export default function Hero() {
+  const { t, isRtl } = useLanguage();
+  const { isDark } = useTheme();
+
+  const titles = t.hero.titles;
   const [titleIdx, setTitleIdx] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [typing, setTyping] = useState(true);
 
+  const phone = "201004799817";
+  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(t.whatsappWidget.messageText)}`;
+
   useEffect(() => {
     let timeout;
-    const current = TITLES[titleIdx];
+    const current = titles[titleIdx] || titles[0];
     if (typing) {
       if (displayed.length < current.length) {
         timeout = setTimeout(
           () => setDisplayed(current.slice(0, displayed.length + 1)),
-          70,
+          60
         );
       } else {
-        timeout = setTimeout(() => setTyping(false), 2000);
+        timeout = setTimeout(() => setTyping(false), 2200);
       }
     } else {
       if (displayed.length > 0) {
-        timeout = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 40);
+        timeout = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 35);
       } else {
-        setTitleIdx((i) => (i + 1) % TITLES.length);
+        setTitleIdx((i) => (i + 1) % titles.length);
         setTyping(true);
       }
     }
     return () => clearTimeout(timeout);
-  }, [displayed, typing, titleIdx]);
+  }, [displayed, typing, titleIdx, titles]);
 
   const scrollTo = (id) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -90,121 +95,143 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative min-h-screen flex items-center overflow-hidden pt-20"
     >
-      <ParticleField />
+      <ParticleField isDark={isDark} />
+      
+      {/* Glow Ambient Blobs */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-yellow-600/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.025]"
+        className="absolute inset-0 pointer-events-none opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(rgba(200,169,110,1) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,110,1) 1px, transparent 1px)`,
           backgroundSize: "60px 60px",
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-32 grid lg:grid-cols-2 gap-16 items-center">
-        {/* Left */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-2 gap-16 items-center">
+        {/* Left / Main text */}
         <motion.div
-          initial={{ opacity: 0, x: -60 }}
+          initial={{ opacity: 0, x: isRtl ? 60 : -60 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.9, ease: [0.25, 1, 0.5, 1] }}
         >
+          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-600/10 border border-yellow-600/20 backdrop-blur rounded-full text-sm font-mono text-yellow-400 mb-8"
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-mono mb-8 border ${
+              isDark
+                ? "bg-yellow-600/10 border-yellow-600/20 text-yellow-400"
+                : "bg-amber-100 border-amber-300 text-amber-900 font-bold"
+            }`}
           >
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            Available for opportunities
+            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+            {t.hero.badge}
           </motion.div>
 
           <h1
-            className="font-display font-bold leading-none mb-4"
+            className="font-display font-extrabold leading-tight mb-4"
             style={{
-              fontFamily: "'Syne', sans-serif",
-              fontSize: "clamp(2rem, 5vw, 4rem)",
+              fontSize: "clamp(2.2rem, 5vw, 4.2rem)",
             }}
           >
-            <span
-              className="block"
-              style={{
-                background: "linear-gradient(135deg,#e8c98e,#c8a96e,#a8893e)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Ibrahim <br /> Al-Shabrawishy
+            <span className="text-adaptive-subtle text-lg block font-normal font-mono mb-1">
+              {t.hero.greeting}
+            </span>
+            <span className="text-gradient block">
+              {t.hero.name}
             </span>
           </h1>
 
-          <div className="h-10 flex items-center gap-2 mb-6">
+          <div className="h-10 flex items-center gap-2 mb-6" dir="auto">
             <span
-              className="text-lg md:text-xl text-white/50"
-              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+              className={`text-lg md:text-xl font-mono ${
+                isDark ? "text-white/60" : "text-slate-700"
+              }`}
             >
               {displayed}
-              <span className="text-yellow-400 animate-pulse">|</span>
+              <span className="text-yellow-500 animate-pulse font-bold inline-block mx-1">|</span>
             </span>
           </div>
 
-          <p className="text-white/50 text-lg leading-relaxed max-w-lg mb-10">
-            Crafting modern, high-performance web experiences with React.js.
-            Specializing in clean architecture, beautiful interfaces, and
-            seamless user interactions.
+          <p className={`text-lg leading-relaxed max-w-lg mb-10 ${
+            isDark ? "text-white/50" : "text-slate-600"
+          }`}>
+            {t.hero.desc}
           </p>
 
-          <div className="flex flex-wrap gap-4 mb-10">
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-3.5 mb-10">
+            {/* View Projects */}
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => scrollTo("projects")}
-              className="flex items-center gap-2 px-7 py-3.5 text-[#0a0a0f] font-bold rounded-full transition-all duration-300"
+              className="flex items-center gap-2 px-6 py-3.5 text-[#0a0a0f] font-bold rounded-full transition-all duration-300 shadow-lg shadow-gold/20"
               style={{
-                fontFamily: "'Syne',sans-serif",
-                background: "linear-gradient(135deg,#c8a96e,#a8893e)",
-                boxShadow: "0 0 0 rgba(200,169,110,0)",
+                fontFamily: "'Syne', sans-serif",
+                background: "linear-gradient(135deg, #c8a96e, #a8893e)",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.boxShadow =
-                  "0 0 30px rgba(200,169,110,0.4)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.boxShadow = "0 0 0 rgba(200,169,110,0)")
-              }
             >
-              <ExternalLink size={16} /> View Projects
+              <ExternalLink size={16} /> {t.hero.viewProjects}
             </motion.button>
+
+            {/* WhatsApp Direct CTA */}
+            <motion.a
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-6 py-3.5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold rounded-full shadow-lg shadow-emerald-600/20 hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
+              <MessageCircle size={17} />
+              {t.hero.chatWhatsapp}
+            </motion.a>
+
+            {/* Contact Me */}
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => scrollTo("contact")}
-              className="flex items-center gap-2 px-7 py-3.5 bg-white/5 backdrop-blur border border-white/10 rounded-full font-semibold text-white hover:bg-white/10 transition-all duration-300"
-              style={{ fontFamily: "'Syne',sans-serif" }}
+              className={`flex items-center gap-2 px-6 py-3.5 rounded-full font-semibold transition-all duration-300 ${
+                isDark
+                  ? "bg-white/5 border border-white/10 text-white hover:bg-white/10"
+                  : "bg-slate-100 border border-slate-300 text-slate-800 hover:bg-slate-200"
+              }`}
+              style={{ fontFamily: "'Syne', sans-serif" }}
             >
-              Contact Me
+              {t.hero.contactMe}
             </motion.button>
+
+            {/* Download CV */}
             <motion.a
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               href="/assets/Ibrahim_Al-Shabrawishy_CV.pdf"
               download="Ibrahim_Al-Shabrawishy_CV.pdf"
-              className="flex items-center gap-2 px-5 py-3.5 text-white/40 hover:text-yellow-400 transition-colors text-sm"
+              className={`flex items-center gap-2 px-4 py-3.5 text-xs font-mono transition-colors ${
+                isDark ? "text-white/40 hover:text-yellow-400" : "text-slate-500 hover:text-amber-700"
+              }`}
             >
-              <Download size={15} /> Download CV
+              <Download size={15} /> {t.hero.downloadCv}
             </motion.a>
           </div>
 
+          {/* Social Links */}
           <div className="flex items-center gap-4">
             <span
-              className="text-white/20 text-sm"
-              style={{ fontFamily: "'JetBrains Mono',monospace" }}
+              className={`text-xs font-mono ${
+                isDark ? "text-white/30" : "text-slate-400"
+              }`}
             >
-              Find me on
+              {t.hero.findMe}
             </span>
-            <div className="w-8 h-px bg-white/10" />
+            <div className={`w-8 h-px ${isDark ? "bg-white/10" : "bg-slate-300"}`} />
             {[
               {
                 Icon: GithubIcon,
@@ -218,7 +245,7 @@ export default function Hero() {
               },
               {
                 Icon: Mail,
-                href: "mailto:ibrahimalshabrawishy@gmail.com",
+                href: "mailto:ibrahimelshabrawishy123321@gmail.com",
                 label: "Email",
               },
             ].map(({ Icon, href, label }) => (
@@ -228,7 +255,11 @@ export default function Hero() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="w-10 h-10 bg-white/5 backdrop-blur border border-white/10 rounded-xl flex items-center justify-center text-white/40 hover:text-yellow-400 hover:border-yellow-400/30 transition-all duration-300 hover:scale-110"
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+                  isDark
+                    ? "bg-white/5 border border-white/10 text-white/50 hover:text-yellow-400 hover:border-yellow-400/30"
+                    : "bg-white border border-slate-200 text-slate-600 shadow-sm hover:text-amber-600 hover:border-amber-400"
+                }`}
               >
                 <Icon size={17} />
               </a>
@@ -236,23 +267,26 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* Right */}
+        {/* Right / Avatar & Stats */}
         <motion.div
-          initial={{ opacity: 0, x: 60 }}
+          initial={{ opacity: 0, x: isRtl ? -60 : 60 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.9, delay: 0.2, ease: [0.25, 1, 0.5, 1] }}
           className="relative flex items-center justify-center"
         >
-          <div className="absolute w-[340px] h-[340px] md:w-[420px] md:h-[420px] rounded-full border border-dashed border-yellow-600/20 spin-slow" />
-          <div className="absolute w-[300px] h-[300px] md:w-[380px] md:h-[380px] rounded-full border border-yellow-600/10" />
+          <div className="absolute w-[320px] h-[320px] md:w-[400px] md:h-[400px] rounded-full border border-dashed border-yellow-600/20 spin-slow" />
+          <div className="absolute w-[280px] h-[280px] md:w-[360px] md:h-[360px] rounded-full border border-yellow-600/10" />
+          
           <motion.div
             className="relative z-10 w-60 h-60 md:w-72 md:h-72"
             animate={{ y: [0, -12, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           >
             <div
-              className="w-full h-full rounded-full overflow-hidden border-2 border-yellow-600/30 bg-gradient-to-b from-yellow-600/10 to-transparent"
-              style={{ boxShadow: "0 0 60px rgba(200,169,110,0.2)" }}
+              className={`w-full h-full rounded-full overflow-hidden border-2 border-yellow-600/30 shadow-2xl ${
+                isDark ? "bg-gradient-to-b from-yellow-600/10 to-transparent" : "bg-gradient-to-b from-amber-50 to-white"
+              }`}
+              style={{ boxShadow: "0 0 60px rgba(200,169,110,0.25)" }}
             >
               <img
                 src="/assets/images/a9b96478-adc2-49a6-9093-536d3de59b0c-modified.png"
@@ -264,12 +298,12 @@ export default function Hero() {
                 }}
               />
             </div>
-            <div className="absolute bottom-4 right-4 w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+            <div className="absolute bottom-4 right-4 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M5 13l4 4L19 7"
-                  stroke="#0a0a0f"
-                  strokeWidth="2.5"
+                  stroke="#ffffff"
+                  strokeWidth="2.8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -277,51 +311,69 @@ export default function Hero() {
             </div>
           </motion.div>
 
+          {/* Floating Badges */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 }}
-            className="absolute -left-4 md:-left-8 top-8 bg-yellow-600/10 border border-yellow-600/20 backdrop-blur px-4 py-3 rounded-2xl"
+            className={`absolute -left-4 md:-left-8 top-8 px-4 py-3 rounded-2xl border ${
+              isDark
+                ? "bg-yellow-600/10 border-yellow-600/20 backdrop-blur"
+                : "bg-white border-slate-200 shadow-md text-slate-800"
+            }`}
           >
             <div
-              className="text-2xl font-bold text-yellow-400"
-              style={{ fontFamily: "'Syne',sans-serif" }}
+              className="text-2xl font-extrabold text-gold font-mono"
+              dir="ltr"
             >
               7+
             </div>
-            <div className="text-xs text-white/50">Projects Built</div>
+            <div className={`text-xs ${isDark ? "text-white/50" : "text-slate-500"}`}>
+              {t.hero.stats.projects}
+            </div>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1 }}
-            className="absolute -right-4 md:-right-8 bottom-8 bg-yellow-600/10 border border-yellow-600/20 backdrop-blur px-4 py-3 rounded-2xl"
+            className={`absolute -right-4 md:-right-8 bottom-8 px-4 py-3 rounded-2xl border ${
+              isDark
+                ? "bg-yellow-600/10 border-yellow-600/20 backdrop-blur"
+                : "bg-white border-slate-200 shadow-md text-slate-800"
+            }`}
           >
             <div
-              className="text-2xl font-bold text-yellow-400"
-              style={{ fontFamily: "'Syne',sans-serif" }}
+              className="text-2xl font-extrabold text-gold font-mono"
+              dir="ltr"
             >
               3+
             </div>
-            <div className="text-xs text-white/50">Years Learning</div>
+            <div className={`text-xs ${isDark ? "text-white/50" : "text-slate-500"}`}>
+              {t.hero.stats.experience}
+            </div>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.1 }}
-            className="absolute -right-4 md:-right-8 top-12 bg-white/5 border border-white/10 backdrop-blur px-4 py-3 rounded-2xl"
+            className={`absolute -right-4 md:-right-8 top-12 px-4 py-3 rounded-2xl border ${
+              isDark
+                ? "bg-white/5 border-white/10 backdrop-blur"
+                : "bg-white border-slate-200 shadow-md text-slate-800"
+            }`}
           >
             <div
-              className="text-xs text-yellow-400/60"
-              style={{ fontFamily: "'JetBrains Mono',monospace" }}
+              className="text-xs text-gold font-mono"
             >
               {"<React />"}
             </div>
             <div
-              className="text-sm font-bold text-white/80"
+              className={`text-sm font-bold ${isDark ? "text-white/90" : "text-slate-800"}`}
               style={{ fontFamily: "'Syne',sans-serif" }}
             >
-              Specialist
+              {t.hero.stats.specialist}
             </div>
           </motion.div>
         </motion.div>
@@ -332,14 +384,11 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 hover:text-yellow-400 transition-colors"
+        className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 transition-colors ${
+          isDark ? "text-white/30 hover:text-gold" : "text-slate-400 hover:text-amber-600"
+        }`}
       >
-        <span
-          className="text-xs"
-          style={{ fontFamily: "'JetBrains Mono',monospace" }}
-        >
-          scroll
-        </span>
+        <span className="text-xs font-mono">{t.hero.scroll}</span>
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
